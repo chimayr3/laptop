@@ -1,32 +1,48 @@
 #!/bin/bash
 
 # define some variables
-readonly brightness_file="/sys/class/backlight/intel_backlight/brightness"
-readonly brightness_value=$(cat /sys/class/backlight/intel_backlight/brightness)
+readonly BRIGHTNESS_FILE="/sys/class/backlight/intel_backlight/brightness"
+readonly BRIGHTNESS_VALUE=$(cat ${BRIGHTNESS_FILE})
 readonly MAX_VALUE="89"
 readonly MIN_VALUE="0"
-readonly STEP_VALUE="10"
+STEP_VALUE="10"
 
-# print usage
+# print _usage
+# print the usage of this script
 function usage(){
-	echo "Usage: ${0} [-|+]"
+	echo "Usage: ${0} (-|+)"
+	return 0
+}
+
+# function _sum
+# return the result : $1 + $2
+function _sum(){
+	echo "$((${1}+${2}))" ; return 0
+}
+
+# function _sub
+# return the result : $1 - $2
+function _sub(){
+	echo "$((${1}-${2}))" ; return 0
 }
 
 # main case to increase or decrease the brightness of the screen
 case ${1} in
-	+) 	if [ "${brightness_value}" -gt "${MAX_VALUE}" ] ; then
+	+)	if [ "${BRIGHTNESS_VALUE}" -gt "${MAX_VALUE}" ] ; then
 			exit 0
 		else
-			echo $((${brightness_value}+${STEP_VALUE})) > ${brightness_file}
+			_sum "${BRIGHTNESS_VALUE}" "${STEP_VALUE}" > ${BRIGHTNESS_FILE}
 		fi
 	;;
 
-	-)	if [ ${brightness_value} -eq "${MIN_VALUE}" ] ; then
+	-)	if [ ${BRIGHTNESS_VALUE} -eq "${MIN_VALUE}" ] ; then
 			exit 0
 		else
-			echo $((${brightness_value}-${STEP_VALUE})) > ${brightness_file}
+			echo  "${BRIGHTNESS_VALUE}" "${STEP_VALUE}"
+			_sub "${BRIGHTNESS_VALUE}" "${STEP_VALUE}" > ${BRIGHTNESS_FILE}
 		fi
 	;;
 
 	*) usage ;;
 esac
+exit 0
